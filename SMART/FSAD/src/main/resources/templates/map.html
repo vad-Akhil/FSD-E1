@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Interactive Event Map')}"></head>
+<body>
+    <div th:replace="~{layout :: navbar}"></div>
+
+    <main class="container" style="margin-top: 2rem; margin-bottom: 2rem;">
+        <div class="glass" style="padding: 2rem; border-radius: var(--radius-lg);">
+            <h2 style="margin-bottom: 1.5rem;"><i class="fas fa-map-marked-alt text-primary"></i> Interactive Event Map</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Explore all our upcoming events on the map below. Click on any pin to view event details and register.</p>
+            
+            <!-- Leaflet CSS -->
+            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+            
+            <!-- Map Container -->
+            <div id="eventMap" style="height: 600px; border-radius: var(--radius-md); border: 1px solid var(--border); box-shadow: var(--shadow-md); z-index: 1;"></div>
+            
+            <!-- Leaflet JS -->
+            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+            
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Initialize map centered on a college campus (Stanford University) with higher zoom
+                    const map = L.map('eventMap').setView([37.4275, -122.1697], 16);
+
+                    // Add Classic Map Tiles (Esri World Street Map)
+                    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+                        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+                    }).addTo(map);
+
+                    // Define a classic red marker icon
+                    const classicIcon = L.icon({
+                        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                        iconSize: [25, 41],
+                        iconAnchor: [12, 41],
+                        popupAnchor: [1, -34],
+                        shadowSize: [41, 41]
+                    });
+
+                    // Fetch all events
+                    fetch('/api/events')
+                        .then(response => response.json())
+                        .then(events => {
+                            const markers = [];
+
+                            events.forEach(event => {
+                                if (event.latitude && event.longitude) {
+                                    const marker = L.marker([event.latitude, event.longitude], {icon: classicIcon}).addTo(map);
+                                    
+                                    const dateStr = new Date(event.dateTime).toLocaleString(undefined, { 
+                                        weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', 
+                                        hour: '2-digit', minute: '2-digit' 
+                                    });
+
+                                    const popupContent = `
+                                        <div style="font-family: inherit; min-width: 220px; padding: 5px;">
+                                            <h3 style="margin: 0 0 12px 0; color: #333; font-size: 1.15rem; font-weight: 700; border-bottom: 1px solid #eee; padding-bottom: 8px;">${event.title}</h3>
+                                            <p style="margin: 8px 0; color: #555; font-size: 0.95rem;">
+                                                <i class="fas fa-calendar-alt" style="width: 20px; color: #4F46E5;"></i> ${dateStr}
+                                            </p>
+                                            <p style="margin: 8px 0; color: #555; font-size: 0.95rem;">
+                                                <i class="fas fa-map-marker-alt" style="width: 20px; color: #E11D48;"></i> ${event.location}
+                                            </p>
+                                            <div style="margin-top: 15px; text-align: center;">
+                                                <a href="/register/${event.id}" style="display: block; padding: 8px 12px; background: #4F46E5; color: white; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 0.9rem; transition: background 0.2s;">
+                                                    View & Register
+                                                </a>
+                                            </div>
+                                        </div>
+                                    `;
+                                    
+                                    marker.bindPopup(popupContent);
+                                    markers.push(marker);
+                                }
+                            });
+
+                            // Auto-fit the map to show all markers
+                            if (markers.length > 0) {
+                                const group = new L.featureGroup(markers);
+                                map.fitBounds(group.getBounds().pad(0.1));
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching event data:', error);
+                            document.getElementById('eventMap').innerHTML = 
+                                '<div style="display:flex; height:100%; align-items:center; justify-content:center; color:red;">Failed to load map data. Please try again later.</div>';
+                        });
+                });
+            </script>
+        </div>
+    </main>
+
+    <div th:replace="~{layout :: footer}"></div>
+</body>
+</html>

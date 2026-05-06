@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Login - Smart Campus')}"></head>
+<body>
+    <div th:replace="~{layout :: navbar}"></div>
+
+    <main class="container">
+        <div class="form-container glass animate-in" style="max-width: 400px; margin-top: 6rem;">
+            <div style="text-align: center; margin-bottom: 2.5rem;">
+                <div style="width: 60px; height: 60px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; color: white; font-size: 1.5rem;">
+                    <i class="fas fa-sign-in-alt"></i>
+                </div>
+                <h2>Welcome Back</h2>
+                <p style="color: var(--text-muted);">Sign in to manage your events</p>
+            </div>
+
+            <div th:if="${param.error}" class="glass" style="padding: 0.75rem; margin-bottom: 1.5rem; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; border-radius: 0.5rem; font-size: 0.875rem; text-align: center;">
+                Invalid username or password.
+            </div>
+
+            <div th:if="${param.logout}" class="glass" style="padding: 0.75rem; margin-bottom: 1.5rem; background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; color: #10b981; border-radius: 0.5rem; font-size: 0.875rem; text-align: center;">
+                You have been logged out.
+            </div>
+
+            <div th:if="${param.signupSuccess}" class="glass" style="padding: 0.75rem; margin-bottom: 1.5rem; background: rgba(59, 130, 246, 0.1); border: 1px solid #3b82f6; color: #3b82f6; border-radius: 0.5rem; font-size: 0.875rem; text-align: center;">
+                Account created successfully! Please log in.
+            </div>
+
+            <form th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" name="username" class="form-control" placeholder="Enter username" required autofocus>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.8rem; margin-top: 1rem;">
+                    Sign In
+                </button>
+            </form>
+
+            <p style="text-align: center; margin-top: 2rem; font-size: 0.9rem;">
+                Don't have an account? <a th:href="@{/signup}" style="color: var(--primary); font-weight: 600;">Sign Up</a>
+            </p>
+            
+            <p style="text-align: center; margin-top: 1rem; font-size: 0.75rem; color: var(--text-muted);">
+                Default Student: <strong>student</strong> / <strong>student123</strong>
+            </p>
+        </div>
+    </main>
+
+    <div th:replace="~{layout :: footer}"></div>
+</body>
+</html>
