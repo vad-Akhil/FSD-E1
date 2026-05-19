@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Smart Campus Events</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header>
+        <a href="/" class="logo">SmartCampus</a>
+        <nav>
+            <a href="/">Events</a>
+            <a href="/admin/dashboard" class="btn btn-primary">Admin Access</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div style="text-align: center; margin-bottom: 4rem;">
+            <h1 class="page-title">University Events</h1>
+            <p style="color: var(--text-secondary); font-size: 1.1rem; max-width: 600px; margin: 0 auto;">
+                Discover, register, and engage with upcoming academic workshops and campus seminars.
+            </p>
+        </div>
+        
+        <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+        <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+        <div class="event-grid">
+            <div th:each="event : ${events}" class="glass-card">
+                <h3 th:text="${event.title}">Event Title</h3>
+                <div class="event-details">
+                    <p><strong>Date:</strong> <span th:text="${event.eventDate}">2026-05-01</span></p>
+                    <p><strong>Department:</strong> <span th:text="${event.department}">Computer Science</span></p>
+                    <p><strong>Type:</strong> <span th:text="${event.eventType}">Workshop</span></p>
+                    <hr style="border: none; border-top: 1px solid var(--border); margin: 1.5rem 0;">
+                    <p th:text="${event.description}" style="font-size: 0.9rem; line-height: 1.8;"></p>
+                </div>
+                <div class="event-actions">
+                    <a th:href="@{/events/{id}/register(id=${event.id})}" class="btn btn-primary" style="width: 100%;">Register</a>
+                </div>
+            </div>
+            
+            <div th:if="${#lists.isEmpty(events)}" style="grid-column: 1 / -1; text-align: center; color: var(--text-secondary); padding: 4rem;">
+                <p>No upcoming events currently scheduled.<br>Check back later for new opportunities.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

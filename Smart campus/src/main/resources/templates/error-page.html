@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration Error</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <header>
+        <a href="/" class="logo">SmartCampus Events</a>
+        <nav>
+            <a href="/">Browse Events</a>
+            <a href="/admin/dashboard" class="btn btn-primary" style="margin-left:2rem; padding: 0.5rem 1rem;">Admin Dashboard</a>
+        </nav>
+    </header>
+
+    <div class="container" style="text-align: center; margin-top: 10vh;">
+        <div class="glass-card" style="display: inline-block; max-width: 600px;">
+            <h1 class="page-title" style="color: var(--danger);">Oops! Something went wrong.</h1>
+            <p style="font-size: 1.2rem; margin-bottom: 2rem;" th:text="${errorMessage}">An error occurred.</p>
+            <a href="/" class="btn btn-primary">Return to Events</a>
+        </div>
+    </div>
+</body>
+</html>
